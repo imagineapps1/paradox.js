@@ -48,6 +48,9 @@ function unsetBit(buffer) {
     var b = buffer
     var firstByte = b[0] - 2 ** (4 * 2 - 1)
 
+    if (firstByte < 0) {
+        return null
+    }
     if (b.length === 1) {
         if (buffer.readUInt8() !== 0) {
             b.writeUInt8(firstByte)
