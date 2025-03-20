@@ -341,7 +341,7 @@ class ParadoxTable {
                     record[this.TFldInfoRecArray[k].name] = new Field(this.TFldInfoRecArray[k].name,
                         this.TFldInfoRecArray[k].getType(),
                         this.buffer.slice(recordsStart,
-                            recordsStart + this.TFldInfoRecArray[k].getSize()), "ascii", disableWarning)
+                            recordsStart + this.TFldInfoRecArray[k].getSize()), "latin1", disableWarning)
                     
                     recordsStart += this.TFldInfoRecArray[k].getSize()
 
@@ -394,7 +394,7 @@ class ParadoxTable {
                     record.push(new Field(this.TFldInfoRecArray[k].name,
                         this.TFldInfoRecArray[k].getType(),
                         this.buffer.slice(recordsStart,
-                            recordsStart + this.TFldInfoRecArray[k].getSize()), "ascii", disableWarning, dateOffset
+                            recordsStart + this.TFldInfoRecArray[k].getSize()), "latin1", disableWarning, dateOffset
                     )
                     )
                     recordsStart += this.TFldInfoRecArray[k].getSize()
@@ -470,7 +470,7 @@ class ParadoxTable {
                     record.push(new Field(this.TFldInfoRecArray[k].name,
                         this.TFldInfoRecArray[k].getType(),
                         this.buffer.slice(recordsStart,
-                            recordsStart + this.TFldInfoRecArray[k].getSize()), "ascii"
+                            recordsStart + this.TFldInfoRecArray[k].getSize()), "latin1"
                     )
                     )
                     recordsStart += this.TFldInfoRecArray[k].getSize()
@@ -485,7 +485,7 @@ class ParadoxTable {
 }
 
 class Field {
-    constructor(name, type, value, encoding = "ascii", dateOffset = 0) {
+    constructor(name, type, value, encoding = "latin1", dateOffset = 0) {
         this.name = name
         this.type = type
         this.valueBuffer = value
@@ -495,7 +495,8 @@ class Field {
         switch (this.type) {
             case 1:
                 //        |      |            $01     v   "A"  Alpha                                   |
-                this.value = value.toString(encoding)
+                const bytesForString = value.filter(v => v !== 0).map(v => v === 165 ? 209 : v);
+                this.value = String.fromCharCode(...bytesForString);
                 break
             case 2:
                 //        |      |            $02     4   "D"  Date                                    |
